@@ -7,11 +7,14 @@ public class PlayerManager : MonoBehaviour {
 	[HideInInspector]
 	public MeshRenderer contextualText;
 
+	bool respawned;
+
 	GameObject player;
 	CheckpointController checkpointController;
 
 	// Use this for initialization
 	void Start () {
+		respawned = false;
 		checkpointController = FindObjectOfType<CheckpointController> ();
 		player = GameObject.Find("Player");
 		contextualText = player.GetComponentInChildren<MeshRenderer> ();
@@ -21,6 +24,10 @@ public class PlayerManager : MonoBehaviour {
 		if (player == null) {
 			player = GameObject.Find("Player");
 		}
+		if (respawned == true) {
+			player.transform.localEulerAngles = checkpointController.currentCheckpoint.transform.localEulerAngles;
+			respawned = false;
+		}
 	}
 	public void Die(){
 		Destroy (player);
@@ -29,7 +36,8 @@ public class PlayerManager : MonoBehaviour {
 
 	//create new player object at last checkpoint
 	void Respawn(){
-		Instantiate (playerPrefab, checkpointController.currentCheckpoint.transform.position + new Vector3(0,1f), checkpointController.currentCheckpoint.transform.rotation);
+		Instantiate (playerPrefab, checkpointController.currentCheckpoint.transform.position + new Vector3(0,-1f), Quaternion.identity);
+		respawned = true;
 	}
 		
 

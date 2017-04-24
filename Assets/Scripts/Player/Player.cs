@@ -16,8 +16,9 @@ public class Player : MonoBehaviour {
 	public float wallSlideSpeedMax = .5f;
 	public float wallStickTime = .2f;
 	public float ceilingSlideTimer = .15f;
+	public float minGrav = -5f;
 
-	float accelerationTimeAirborne = .22f;
+	public float accelerationTimeAirborne = .22f;
 	float accelerationTimeGrounded = .1f;
 	float planetSwapTime = 1f;
 	float planetSwapTimer = -1;
@@ -46,12 +47,11 @@ public class Player : MonoBehaviour {
 	bool canCeilingSlide;
 	bool slide;
 	bool sprinting;
+	bool wallUnstuck;
 
 	public Vector2 wallJumpClimb;
 	public Vector2 wallJumpOff;
 	public Vector2 wallLeap;
-
-	public GameObject playerPrefab;
 
 	Vector3 velocity;
 	Controller2D controller;
@@ -59,11 +59,13 @@ public class Player : MonoBehaviour {
 	PlayerManager playerManager;
 	Planet[] planets;
 	Planet standPlanet;
+	SpriteRenderer spriteRend;
 
 	void Start(){
 		planets = FindObjectsOfType<Planet> ();
 		controller = GetComponent<Controller2D> ();
 		anim = GetComponent<Animator> ();
+		spriteRend = GetComponent<SpriteRenderer> ();
 		playerManager = FindObjectOfType<PlayerManager> ();
 		distanceToPlanet = 1;
 		gravity = -(2 * maxJumpHeight) / Mathf.Pow (timeToJumpApex, 2);
@@ -78,10 +80,9 @@ public class Player : MonoBehaviour {
 	}
 
 	void Update(){
-
 		FindStrongestPlanet ();
+		gravity = GetGravity ();
 		if(standPlanet != null){
-			Vector2 planetPos = new Vector2 (standPlanet.transform.position.x, standPlanet.transform.position.y);
 			float a = transform.position.x - standPlanet.transform.position.x;
 			float b = transform.position.y - standPlanet.transform.position.y;
 			controller.collisions.a = a;
@@ -96,8 +97,6 @@ public class Player : MonoBehaviour {
 						planetSwapTimer = -1;
 					}
 				}
-				Vector3 newRotation = new Vector3 (0, 0, angle);
-				transform.eulerAngles = newRotation;
 			} else {
 				angle = -angle - 90;
 				if (planetSwapTimer > 0) {
@@ -106,9 +105,9 @@ public class Player : MonoBehaviour {
 						planetSwapTimer = -1;
 					}
 				}
-				Vector3 newRotation = new Vector3 (0, 0, angle);
-				transform.eulerAngles = newRotation;
 			}
+			Vector3 newRotation = new Vector3 (0, 0, angle);
+			transform.eulerAngles = newRotation;
 			controller.collisions.angle = angle;
 		}
 			
@@ -123,23 +122,33 @@ public class Player : MonoBehaviour {
 		Vector2 input = new Vector2 (Input.GetAxisRaw ("Horizontal"), Input.GetAxisRaw ("Vertical"));
 		int wallDirX = (controller.collisions.left) ? -1 : 1;
 
+		if (!ceilingSlide && !slide) {
+			float targetVelocityX = input.x * ((sprinting) ? sprintSpeed : moveSpeed);
+			//Smooth horizontal movement
+			velocity.x = Mathf.SmoothDamp (velocity.x, targetVelocityX, ref velocityXSmoothing, (controller.collisions.below) ? accelerationTimeGrounded : accelerationTimeAirborne);
+		}
+
 		bool wallSliding = false; 
 		controller.collisions.wallSlide = false;
 
 		WallSlideCheck (ref wallSliding, input, wallDirX);
 
+		if (!wallSliding) {
+			if (spriteRend.flipX) {
+				spriteRend.flipX = false;
+			}
+		}
+
 		if (!ceilingSlide && !slide) {
 			if (!wallSliding) {
-				print (input.x);
 				if (input.x != 0) {
-					anim.SetBool ("Moving", true);
+					if (!anim.GetBool ("Jumping") && !anim.GetBool ("DoubleJump")) {
+						anim.SetBool ("Moving", true);
+					}
 				} else {
 					anim.SetBool ("Moving", false);
 				}
 			}
-			float targetVelocityX = input.x * ((sprinting) ? sprintSpeed : moveSpeed);
-			//Smooth horizontal movement
-			velocity.x = Mathf.SmoothDamp (velocity.x, targetVelocityX, ref velocityXSmoothing, (controller.collisions.below) ? accelerationTimeGrounded : accelerationTimeAirborne);
 		}
 
 		//Check if we are on ground
@@ -167,6 +176,12 @@ public class Player : MonoBehaviour {
 				canCeilingSlide = false;
 			}
 		} else {	//We are on the ground
+			if (anim.GetBool ("Falling")) {
+				if (jumpTime < 0) {
+					anim.SetTrigger ("Land");
+				}
+				anim.SetBool ("Falling", false);
+			}
 			canJump = true;
 			playerManager.playerAbilities.canDoubleJump = true;
 			jumpTime = airJumpTime;
@@ -196,7 +211,9 @@ public class Player : MonoBehaviour {
 		if (Input.GetKeyDown (KeyCode.Space)) {
 			slide = false;
 			if (wallSliding) {
+				//STOP WALL CLING ANIM HERE
 				controller.collisions.wallTimer = .03f;
+				controller.collisions.wallJump = true;
 				if (wallDirX == input.x) {
 					velocity.x = -wallDirX * wallJumpClimb.x;
 				} else if (input.x == 0) {
@@ -204,11 +221,22 @@ public class Player : MonoBehaviour {
 				} else {
 					velocity.x = -wallDirX * wallLeap.x;
 				}
+				wallSliding = false;
+				anim.SetBool ("Wallslide", false);
+				if (spriteRend.flipX) {
+					spriteRend.flipX = false;
+				}
 			}
 			if (controller.collisions.below || canJump || playerManager.playerAbilities.canDoubleJump) {
 				if (!canJump) {
+					anim.SetBool ("DoubleJump", true);
+					anim.SetBool ("Jumping", false);
 					playerManager.playerAbilities.canDoubleJump = false;
+				} else {
+					anim.SetBool ("Jumping", true);
 				}
+				anim.SetBool ("Moving", false);
+				anim.SetBool ("Falling", false);
 				velocity.y = maxJumpVelocity;
 				canJump = false;
 			}
@@ -237,6 +265,20 @@ public class Player : MonoBehaviour {
 		} else {
 			if (!wallSliding) {
 				velocity.y += gravity * Time.deltaTime;
+				if (!controller.collisions.below) {
+					if (velocity.y < 0) {
+						if (jumpTime < 0) {
+							anim.SetBool ("Falling", true);
+							anim.SetBool ("Jumping", false);
+							anim.SetBool ("DoubleJump", false);
+						}
+					} else if (velocity.y > 0) {
+						if(!anim.GetBool("DoubleJump") && !anim.GetBool("Jumping")){
+							anim.SetBool("Jumping", true);
+						}
+					}
+
+				}
 			} else {
 				velocity.y += gravity * Time.deltaTime * upwardsWallSlow;
 			}
@@ -264,15 +306,29 @@ public class Player : MonoBehaviour {
 	}
 
 	void WallSlideCheck(ref bool wallSliding, Vector2 input, int wallDirX){
-		if ((controller.collisions.left || controller.collisions.right) && !controller.collisions.below) {
- 			wallSliding = true;
+		if ((controller.collisions.left || controller.collisions.right) && !controller.collisions.below || controller.collisions.backwardsWallslide) {
+			if (controller.collisions.backwardsWallslide) {
+				controller.collisions.faceDir = -controller.collisions.faceDir;
+				transform.localScale = new Vector3 (1 * controller.collisions.faceDir, 1, 1);
+			} 
+
+			if (!spriteRend.flipX && !wallUnstuck) {
+				spriteRend.flipX = true;
+			} else if (wallUnstuck) {
+				wallUnstuck = false;
+			}
+			wallSliding = true;
+			anim.SetBool ("Wallslide", true);
+			anim.SetBool ("Falling", false);
+			anim.SetBool ("Jumping", false);
+			anim.SetBool ("DoubleJump", false);
 			controller.collisions.wallSlide = true;
 			canJump = true;
 			//Reset DoubleJump on walls
 			playerManager.playerAbilities.canDoubleJump = true;
 
 			if (velocity.y < -wallSlideSpeedMax) {
-				velocity.y =  Mathf.SmoothDamp (velocity.y, -wallSlideSpeedMax, ref velocityYSmoothing, accelerationTimeWall);
+				velocity.y = Mathf.SmoothDamp (velocity.y, -wallSlideSpeedMax, ref velocityYSmoothing, accelerationTimeWall);
 			}
 
 			if (timeToWallUnstick > 0) {
@@ -285,8 +341,12 @@ public class Player : MonoBehaviour {
 					timeToWallUnstick = wallStickTime;
 				}
 			} else {
+				wallSliding = false;
+				wallUnstuck = true;
 				timeToWallUnstick = wallStickTime;
 			}
+		} else if(anim.GetBool("Wallslide"))  {
+			anim.SetBool ("Wallslide", false);
 		}
 	}
 
@@ -314,12 +374,24 @@ public class Player : MonoBehaviour {
 					topForce = tempForce;
 				}
 			}
-			if (standPlanet != tempPlanet) {
+			if ((standPlanet != tempPlanet && topForce < minGrav) || standPlanet == null) {
+				print(topForce + " " + minGrav);
 				standPlanet = tempPlanet;
 				gravity = topForce;
 				planetSwapTimer = planetSwapTime;
 				velocity.y = 0;
 			}
+		}
+	}
+
+	float GetGravity(){
+		float distance = Vector2.Distance (new Vector2 (transform.position.x, transform.position.y), 
+			new Vector2 (standPlanet.transform.position.x, standPlanet.transform.position.y));
+		float tempGrav = standPlanet.gravityConst * (standPlanet.mass / (Mathf.Pow (distance, 2) * 1.2f));
+		if (tempGrav > minGrav) {
+			return minGrav;
+		} else {
+			return tempGrav;
 		}
 	}
 }

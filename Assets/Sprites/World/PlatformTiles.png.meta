@@ -1,33 +1,29 @@
 fileFormatVersion: 2
-guid: 9746ff7e579828a41ae7e64ddb962b98
-timeCreated: 1492823835
+guid: 377a9d6a22a955048a9727e25a83a826
+timeCreated: 1492926434
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
-    21300000: Male_Char_0
-    21300002: Male_Char_1
-    21300004: Male_Char_2
-    21300006: Male_Char_3
-    21300008: Male_Char_4
-    21300010: Male_Char_5
-    21300012: Male_Char_6
-    21300014: Male_Char_7
-    21300016: Male_Char_8
-    21300018: Male_Char_9
-    21300020: Male_Char_10
-    21300022: Male_Char_11
-    21300024: Male_Char_12
-    21300026: Male_Char_13
-    21300028: Male_Char_14
-    21300030: Male_Char_15
-    21300032: Male_Char_16
-    21300034: Male_Char_17
-    21300036: Male_Char_18
-    21300038: Male_Char_19
+    21300000: PlatformTiles_0
+    21300002: PlatformTiles_1
+    21300004: PlatformTiles_2
+    21300006: PlatformTiles_3
+    21300008: PlatformTiles_4
+    21300010: PlatformTiles_5
+    21300012: PlatformTiles_6
+    21300014: PlatformTiles_7
+    21300016: PlatformTiles_8
+    21300018: PlatformTiles_9
+    21300020: PlatformTiles_10
+    21300022: PlatformTiles_11
+    21300024: PlatformTiles_12
+    21300026: PlatformTiles_13
+    21300028: PlatformTiles_14
+    21300030: PlatformTiles_15
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 0
+    enableMipMap: 1
     sRGBTexture: 1
     linearTexture: 0
     fadeOut: 0
@@ -106,260 +102,208 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Male_Char_0
+      name: PlatformTiles_0
       rect:
         serializedVersion: 2
-        x: 248
-        y: 2661
-        width: 204
-        height: 838
+        x: 0
+        y: 480
+        width: 160
+        height: 160
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Male_Char_1
+      name: PlatformTiles_1
       rect:
         serializedVersion: 2
-        x: 908
-        y: 2661
-        width: 204
-        height: 838
+        x: 160
+        y: 480
+        width: 160
+        height: 160
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Male_Char_2
+      name: PlatformTiles_2
       rect:
         serializedVersion: 2
-        x: 1568
-        y: 2661
-        width: 204
-        height: 849
+        x: 320
+        y: 480
+        width: 160
+        height: 160
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Male_Char_3
+      name: PlatformTiles_3
       rect:
         serializedVersion: 2
-        x: 2228
-        y: 2661
-        width: 204
-        height: 849
+        x: 480
+        y: 480
+        width: 160
+        height: 160
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Male_Char_4
+      name: PlatformTiles_4
       rect:
         serializedVersion: 2
-        x: 2887
-        y: 2661
-        width: 205
-        height: 849
+        x: 0
+        y: 320
+        width: 160
+        height: 160
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Male_Char_5
+      name: PlatformTiles_5
       rect:
         serializedVersion: 2
-        x: 248
-        y: 1781
-        width: 194
-        height: 838
+        x: 160
+        y: 320
+        width: 160
+        height: 160
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Male_Char_6
+      name: PlatformTiles_6
       rect:
         serializedVersion: 2
-        x: 813
-        y: 1781
-        width: 289
-        height: 838
+        x: 320
+        y: 320
+        width: 160
+        height: 160
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Male_Char_7
+      name: PlatformTiles_7
       rect:
         serializedVersion: 2
-        x: 1516
-        y: 1781
-        width: 246
-        height: 849
+        x: 480
+        y: 320
+        width: 160
+        height: 160
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Male_Char_8
+      name: PlatformTiles_8
       rect:
         serializedVersion: 2
-        x: 2210
-        y: 1781
-        width: 212
-        height: 849
+        x: 0
+        y: 160
+        width: 160
+        height: 160
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Male_Char_9
+      name: PlatformTiles_9
       rect:
         serializedVersion: 2
-        x: 2887
-        y: 1781
-        width: 195
-        height: 849
+        x: 160
+        y: 160
+        width: 160
+        height: 160
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Male_Char_10
+      name: PlatformTiles_10
       rect:
         serializedVersion: 2
-        x: 248
-        y: 901
-        width: 194
-        height: 838
+        x: 320
+        y: 160
+        width: 160
+        height: 160
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Male_Char_11
+      name: PlatformTiles_11
       rect:
         serializedVersion: 2
-        x: 813
-        y: 911
-        width: 289
-        height: 828
+        x: 480
+        y: 160
+        width: 160
+        height: 160
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Male_Char_12
+      name: PlatformTiles_12
       rect:
         serializedVersion: 2
-        x: 1516
-        y: 911
-        width: 246
-        height: 839
+        x: 0
+        y: 0
+        width: 160
+        height: 160
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Male_Char_13
+      name: PlatformTiles_13
       rect:
         serializedVersion: 2
-        x: 2210
-        y: 908
-        width: 212
-        height: 842
+        x: 160
+        y: 0
+        width: 160
+        height: 160
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Male_Char_14
+      name: PlatformTiles_14
       rect:
         serializedVersion: 2
-        x: 2887
-        y: 908
-        width: 195
-        height: 842
+        x: 320
+        y: 0
+        width: 160
+        height: 160
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Male_Char_15
+      name: PlatformTiles_15
       rect:
         serializedVersion: 2
-        x: 248
-        y: 21
-        width: 204
-        height: 838
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: Male_Char_16
-      rect:
-        serializedVersion: 2
-        x: 908
-        y: 21
-        width: 204
-        height: 832
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: Male_Char_17
-      rect:
-        serializedVersion: 2
-        x: 1568
-        y: 21
-        width: 204
-        height: 838
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: Male_Char_18
-      rect:
-        serializedVersion: 2
-        x: 2228
-        y: 21
-        width: 204
-        height: 838
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: Male_Char_19
-      rect:
-        serializedVersion: 2
-        x: 2887
-        y: 21
-        width: 205
-        height: 838
+        x: 480
+        y: 0
+        width: 160
+        height: 160
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

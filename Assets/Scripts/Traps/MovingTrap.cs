@@ -2,22 +2,46 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class MovingTrapController : MonoBehaviour {
+public class MovingTrap : MonoBehaviour {
 
 	public Vector3[] localWaypoints;
+	public Planet myPlanet;
 	Vector3[] globalWaypoints;
 
 	public float speed;
 	public bool cyclic;
+	public bool flipY;
+	public bool left;
+	public bool horizontal;
 	public float waitTime;
 	[Range(0,2)]
 	public float easeAmount;
 
 	int fromWaypointIndex;
+	int faceDir;
 	float percentBetweenWaypoints;
 	float nextMoveTime;
+	AngleController angCont;
 
 	void Start () {
+		angCont = FindObjectOfType<AngleController> ();
+		if (left) {
+			faceDir = -1;
+		} else {
+			faceDir = 1;
+		}
+		if (horizontal) {
+			transform.localEulerAngles = angCont.GetAngle (transform.position, myPlanet);
+		} else {
+			Vector3 newRot = new Vector3(0, 0, angCont.GetAngle (transform.position, myPlanet).z - 90);
+			transform.localEulerAngles = newRot;
+		}
+		if (flipY) {
+			transform.localScale = new Vector3 (transform.localScale.x * faceDir, transform.localScale.y * -1, transform.localScale.z);
+		} else {
+			transform.localScale = new Vector3 (transform.localScale.x * faceDir, transform.localScale.y, transform.localScale.z);
+		}
+
 		globalWaypoints = new Vector3[localWaypoints.Length];
 		for (int i = 0; i < localWaypoints.Length; i++) {
 			globalWaypoints [i] = localWaypoints [i] + transform.position;
@@ -26,6 +50,16 @@ public class MovingTrapController : MonoBehaviour {
 		
 	void Update () {
 		Vector3 velocity = CalculateTrapMovement();
+		if (horizontal) {
+			transform.localEulerAngles = angCont.GetAngle (transform.position, myPlanet);
+		} else {
+			Vector3 newRot = new Vector3(0, 0, angCont.GetAngle (transform.position, myPlanet).z - 90);
+			transform.localEulerAngles = newRot;
+		}
+		if ((velocity.x > 0 && faceDir == -1) || (velocity.x < 0 && faceDir == 1)) {
+			faceDir = -faceDir;
+			transform.localScale = new Vector3 (transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
+		} 
 		transform.Translate (velocity, Space.World);
 	}
 

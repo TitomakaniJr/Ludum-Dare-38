@@ -1,32 +1,36 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BonfireController : MonoBehaviour {
+public class Checkpoint : MonoBehaviour {
 
-	public CheckpointController checkpointController;
+	public bool active;
+	public Sprite shipActive;
+	public Sprite shipInactive;
+	public Planet myPlanet;
 
-	public bool lit;
-
-	Animator anim;
-	MeshRenderer contextualText;
-
+	SpriteRenderer textRend;
+	CheckpointController checkpointController;
+	SpriteRenderer rend;
+	AngleController angCont;
 	// Use this for initialization
 	void Start () {
-		anim = GetComponent<Animator> ();
-		contextualText = GetComponentInChildren<MeshRenderer> ();
-		contextualText.transform.position = new Vector3 (transform.position.x, transform.position.y + 2, transform.position.z);
+		angCont = FindObjectOfType<AngleController> ();
+		checkpointController = FindObjectOfType<CheckpointController> ();
+		rend = GetComponent<SpriteRenderer> ();
+		textRend = transform.Find ("Text").GetComponent<SpriteRenderer> ();
+		transform.localEulerAngles = angCont.GetAngle (transform.position, myPlanet);
 	}
 		
 	void Update(){
 		if (checkpointController == null){
 			checkpointController = FindObjectOfType<CheckpointController> ();
 		}
-		if (checkpointController.currentCheckpoint == gameObject && !lit) {
-			lit = true;
-			anim.SetBool ("Lit", lit);
-		} else if(lit && checkpointController.currentCheckpoint != gameObject) {
-			lit = false;
-			anim.SetBool ("Lit", lit);
+		if (checkpointController.currentCheckpoint == gameObject && !active) {
+			rend.sprite = shipActive;
+			active = true;
+		} else if(active && checkpointController.currentCheckpoint != gameObject) {
+			rend.sprite = shipInactive;
+			active = false;
 		}
 	}
 
@@ -52,6 +56,6 @@ public class BonfireController : MonoBehaviour {
 	}
 
 	void SetTextEnable(bool enable){
-		contextualText.enabled = enable;
+		textRend.enabled = enable;
 	}
 }

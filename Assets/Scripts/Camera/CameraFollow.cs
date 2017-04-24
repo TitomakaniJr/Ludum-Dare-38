@@ -11,10 +11,8 @@ public class CameraFollow : MonoBehaviour {
 	public float lookAheadDstX;
 	public float lookSmoothTimeX;
 	public float verticalSmoothTime;
-	public float rotationTime = 2;
 
 	//Private variables
-	Image druggedImage;
 	FocusArea focusArea;
 	Random random;
 
@@ -23,18 +21,12 @@ public class CameraFollow : MonoBehaviour {
 	float lookAheadDirX;
 	float smoothLookVelocityX;
 	float smoothVelocityY;
-	float smoothRotation;
-	float rotationTimer;
-
-	int rotationDir;
 
 	bool lookAheadStopped;
-	bool rotate = false;
 	bool backwards;
 
 	void Start(){
 		focusArea = new FocusArea (target.collider.bounds, focusAreaSize);
-		druggedImage = GetComponentInChildren<Image> ();
 	}
 
 	void Update(){

@@ -53,25 +53,31 @@ public class Controller2D : RaycastController {
 		float rayLength = 2 * skinWidth;
 
 		//Check 
-		for (int i = 0; i < horizontalRayCount; i++) {
+		for (int i = 0; i < horizontalRayCount + 1; i++) {
 			Vector2 rayOriginLeft = raycastOrigins.bottomLeft;
 			Vector2 rayOriginRight =  raycastOrigins.bottomRight;
-			rayOriginLeft += Vector2.up * (horizontalRaySpacing * i);
-			rayOriginRight += Vector2.up * (horizontalRaySpacing * i);
-			RaycastHit2D trapHitLeft = Physics2D.Raycast (rayOriginLeft, Vector2.right * -1, rayLength, trapMask);
-			RaycastHit2D trapHitRight = Physics2D.Raycast (rayOriginRight, Vector2.right, rayLength, trapMask);
+			Vector2 tempDir = new Vector2 (raycastOrigins.bottomLeft.x - raycastOrigins.bottomRight.x, raycastOrigins.bottomLeft.y - raycastOrigins.bottomRight.y);
+			Vector2 spacing = (((raycastOrigins.topRight - raycastOrigins.bottomRight) / horizontalRayCount) * i);
+			rayOriginLeft += spacing;
+			rayOriginRight += spacing;
+			RaycastHit2D trapHitLeft = Physics2D.Raycast (rayOriginLeft, tempDir * -1, rayLength, trapMask);
+			RaycastHit2D trapHitRight = Physics2D.Raycast (rayOriginRight, tempDir, rayLength, trapMask);
+			Debug.DrawRay (rayOriginRight,tempDir * rayLength, Color.yellow);
 			if (trapHitLeft || trapHitRight) {
 				collisions.trapNext = true;
 			}
 		}
 
-		for (int i = 0; i < verticalRayCount; i++) {
-			Vector2 rayOriginLeft = raycastOrigins.bottomLeft;
+		for (int i = 0; i < verticalRayCount + 1; i++) {
+			Vector2 rayOriginLeft = raycastOrigins.bottomLeftInner;
 			Vector2 rayOriginRight =  raycastOrigins.topLeft;
-			rayOriginLeft += Vector2.right * (verticalRaySpacing * i);
-			rayOriginRight += Vector2.right * (verticalRaySpacing * i);
-			RaycastHit2D trapHitLeft = Physics2D.Raycast (rayOriginLeft, Vector2.right, rayLength, trapMask);
-			RaycastHit2D trapHitRight = Physics2D.Raycast (rayOriginRight, Vector2.right * -1 , rayLength, trapMask);
+			Vector2 tempDir = new Vector2 (raycastOrigins.bottomLeft.x - raycastOrigins.topLeft.x, raycastOrigins.bottomLeft.y - raycastOrigins.topLeft.y);
+			Vector2 spacing = (((raycastOrigins.bottomRight - raycastOrigins.bottomLeft) / verticalRayCount) * i);
+			rayOriginLeft += spacing;
+			rayOriginRight += spacing;
+			RaycastHit2D trapHitLeft = Physics2D.Raycast (rayOriginLeft, -tempDir, rayLength, trapMask);
+			RaycastHit2D trapHitRight = Physics2D.Raycast (rayOriginRight, tempDir, rayLength, trapMask);
+			Debug.DrawRay (rayOriginRight, tempDir * rayLength, Color.yellow);
 			if (trapHitLeft || trapHitRight) {
 				collisions.trapNext = true;
 			}
@@ -81,19 +87,22 @@ public class Controller2D : RaycastController {
 	void HorizontalCollisions(ref Vector3 velocity){
 		float directionX = collisions.faceDir;
 		float rayLength = Mathf.Abs (velocity.x) + skinWidth;
+		Vector2 rayOrigin;
 
 		if (Mathf.Abs (velocity.x) < skinWidth) {
 			rayLength = 2 * skinWidth;
 		}
 
 		for (int i = 0; i < horizontalRayCount; i++) {
-			Vector2 rayOrigin;
 			Vector2 tempDir;
+			if (collisions.wallJump) {
+				rayOrigin = (((raycastOrigins.topRight - raycastOrigins.bottomRight) / horizontalRayCount) * i) + -raycastOrigins.bottomRight;
+			} else {
+				rayOrigin = (((raycastOrigins.topRight - raycastOrigins.bottomRight) / horizontalRayCount) * i) + raycastOrigins.bottomRight;
+			}
 			if (directionX == 1) {
-				rayOrigin = (i == 0) ? raycastOrigins.bottomRight : raycastOrigins.topRight;
 				tempDir = new Vector2 (raycastOrigins.bottomLeft.x - raycastOrigins.bottomRight.x, raycastOrigins.bottomLeft.y - raycastOrigins.bottomRight.y);
 			} else {
-				rayOrigin = (i == 0) ? raycastOrigins.bottomRight : raycastOrigins.topRight;
 				tempDir = new Vector2 (raycastOrigins.bottomRight.x - raycastOrigins.bottomLeft.x, raycastOrigins.bottomRight.y - raycastOrigins.bottomLeft.y);
 			}
 			RaycastHit2D trapHit = Physics2D.Raycast (rayOrigin, tempDir * -directionX, rayLength, trapMask);
@@ -101,26 +110,51 @@ public class Controller2D : RaycastController {
 				collisions.trapNext = true;
 			}
 			RaycastHit2D hit = Physics2D.Raycast (rayOrigin, tempDir * -directionX, rayLength, collisionMask);
-			Debug.DrawRay (rayOrigin, tempDir * -directionX * rayLength, Color.red);
+			Debug.DrawRay (rayOrigin, tempDir * -directionX * rayLength, Color.green);
 
-			if (hit) {
+			RaycastHit2D secondHit = Physics2D.Raycast (raycastOrigins.bottomUpper, tempDir * directionX, 0f, collisionMask);
+			Debug.DrawRay (raycastOrigins.bottomUpper, tempDir *directionX * 0f, Color.red);
+
+			RaycastHit2D thirdHit = Physics2D.Raycast (rayOrigin, tempDir * -directionX, 5, collisionMask);
+			//Debug.DrawRay (rayOrigin, tempDir * -directionX * 5, Color.red);
+			if (secondHit) {
+			}
+
+			if (hit || secondHit || thirdHit) {
+				if(!hit){
+					if (secondHit) {
+						hit = secondHit;
+						directionX = -directionX;
+					}
+				}
 
 				if (collisions.wallTimer > 0) {
 					collisions.wallTimer -= Time.deltaTime;
 					continue;
 				} 
 
-				if (hit.distance == 0) {
+				if (hit.distance == 0 && !secondHit && !thirdHit) {
 					continue;
-				} 
+				}
 					
-				velocity.x = (hit.distance - skinWidth) * directionX;
-				rayLength = hit.distance;
-				collisions.left = directionX == -1;
-				collisions.right = directionX == 1;
+
+				if (secondHit) {
+					velocity.x = .1f * directionX;
+					collisions.backwardsWallslide = true;
+				} else if(hit && hit.distance == 0 && thirdHit){
+ 					velocity.x = .1f * - directionX;
+				}else if(hit){
+					velocity.x = (hit.distance - skinWidth) * directionX;
+				}
+				if (hit) {
+					rayLength = hit.distance;
+					collisions.left = directionX == -1;
+					collisions.right = directionX == 1;
+				}
 
 			}
 		}
+		collisions.wallJump = false;
 	}
 
 	void VerticalCollisions(ref Vector3 velocity){
@@ -156,6 +190,7 @@ public class Controller2D : RaycastController {
 						continue;
 					}
 				} 
+
 				if(!collisions.wallSlide){
 					velocity.y = (hit.distance - skinWidth) * directionY;
 					rayLength = hit.distance;
@@ -178,6 +213,8 @@ public class Controller2D : RaycastController {
 		public bool trapNext;
 		public bool trap;
 		public bool wallSlide;
+		public bool wallJump;
+		public bool backwardsWallslide;
 		public float wallTimer;
 
 		public float angle;
@@ -189,8 +226,8 @@ public class Controller2D : RaycastController {
 		public void Reset(){
 			above = below = false;
 			left = right = false;
-			trapNext = false;
 			trap = false;
+			backwardsWallslide = false;
 		}
 	}
 }
