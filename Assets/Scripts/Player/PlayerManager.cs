@@ -26,6 +26,7 @@ public class PlayerManager : MonoBehaviour {
 		}
 		if (respawned == true) {
 			player.transform.localEulerAngles = checkpointController.currentCheckpoint.transform.localEulerAngles;
+			player.GetComponent<Player> ().standPlanet = checkpointController.currentCheckpoint.GetComponent<Checkpoint> ().myPlanet;
 			respawned = false;
 		}
 	}

@@ -52,13 +52,14 @@ public class Player : MonoBehaviour {
 	public Vector2 wallJumpClimb;
 	public Vector2 wallJumpOff;
 	public Vector2 wallLeap;
+	[HideInInspector]
+	public Planet standPlanet;
 
 	Vector3 velocity;
 	Controller2D controller;
 	Animator anim;
 	PlayerManager playerManager;
 	Planet[] planets;
-	Planet standPlanet;
 	SpriteRenderer spriteRend;
 
 	void Start(){
@@ -374,8 +375,7 @@ public class Player : MonoBehaviour {
 					topForce = tempForce;
 				}
 			}
-			if ((standPlanet != tempPlanet && topForce < minGrav) || standPlanet == null) {
-				print(topForce + " " + minGrav);
+			if ((standPlanet != tempPlanet && topForce < -10) || standPlanet == null) {
 				standPlanet = tempPlanet;
 				gravity = topForce;
 				planetSwapTimer = planetSwapTime;

@@ -10,7 +10,6 @@ public class StationaryTrap : MonoBehaviour {
 	public Planet myPlanet;
 
 	int faceDir;
-	float spawnPosY;
 
 	AngleController angCont;
 	// Use this for initialization

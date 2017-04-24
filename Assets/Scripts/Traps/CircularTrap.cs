@@ -3,23 +3,83 @@ using System.Collections;
 
 public class CircularTrap : MonoBehaviour {
 
-	float angle = 0;
-	public Vector3 center;
 	public float speed;
 	public float radius;
-	public int faceDir;
+	public bool flipY;
+	public bool left;
+	public bool horizontal;
+	public Vector3 center;
+	public Planet myPlanet;
+
+	int faceDir;
+	float angle = 0;
+ 	AngleController angCont;
+	SpriteRenderer spriteRend;
 
 	// Use this for initialization
 	void Start () {
-		speed = (2 * Mathf.PI) / speed;
+		angCont = FindObjectOfType<AngleController> ();
+		spriteRend = GetComponent<SpriteRenderer> ();
+		if (left) {
+			faceDir = -1;
+		} else {
+			faceDir = 1;
+		}
+		if (horizontal) {
+			transform.localEulerAngles = angCont.GetAngle (transform.position, myPlanet);
+		} else {
+			Vector3 newRot = new Vector3(0, 0, angCont.GetAngle (transform.position, myPlanet).z - 90);
+			transform.localEulerAngles = newRot;
+		}
+
+		if (flipY) {
+			transform.localScale = new Vector3 (transform.localScale.x, transform.localScale.y * -1, transform.localScale.z);
+		} else {
+			transform.localScale = new Vector3 (transform.localScale.x, transform.localScale.y, transform.localScale.z);
+		}
 		center += transform.position;
 	}
 	
 	// Update is called once per frame
 	void Update () {
+		Vector3 diff = transform.position - center;
+		if (horizontal) {
+			if (!left) {
+				if (diff.x < 0 && diff.y > 0 && spriteRend.flipX) {
+					spriteRend.flipX = false;
+				} else if (diff.x > 0 && diff.y < 0 && !spriteRend.flipX) {
+					spriteRend.flipX = true;
+				}
+			} else {
+				if (diff.x < 0 && diff.y < 0 && !spriteRend.flipX) {
+					spriteRend.flipX = true;
+				} else if (diff.x > 0 && diff.y > 0 && spriteRend.flipX) {
+					spriteRend.flipX = false;
+				}
+			}
+			transform.localEulerAngles = angCont.GetAngle (transform.position, myPlanet);
+		} else {
+			if (left) {
+				if (diff.x < 0 && diff.y > 0 && !spriteRend.flipX) {
+					spriteRend.flipX = true;
+				} else if (diff.x > 0 && diff.y < 0 && spriteRend.flipX) {
+					spriteRend.flipX = false;
+				}
+			} else {
+				if (diff.x < 0 && diff.y < 0 && !spriteRend.flipX) {
+					spriteRend.flipX = true;
+				} else if (diff.x > 0 && diff.y > 0 && spriteRend.flipX) {
+					spriteRend.flipX = false;
+				}
+			}
+			Vector3 newRot = new Vector3(0, 0, angCont.GetAngle (transform.position, myPlanet).z - 90);
+			transform.localEulerAngles = newRot;
+		}
 		angle += speed * Time.deltaTime * faceDir;
+		if (angle > 10000) {
+			angle = 0;
+		}
 		transform.position = new Vector3 (Mathf.Cos (angle) * radius + center.x,  Mathf.Sin (angle) * radius + center.y , 1);
-
 	}
 
 	void OnDrawGizmos(){

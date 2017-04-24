@@ -9,10 +9,10 @@ public class AngleController : MonoBehaviour {
 		float b = pos.y - thisPlanet.transform.position.y;
 		float distanceToPlanet = Mathf.Sqrt (a * a + b * b);
 		float angle = Mathf.Rad2Deg * Mathf.Acos (((distanceToPlanet * distanceToPlanet) + (a * a) - (b * b)) / (2 * distanceToPlanet * a));
-		if (transform.position.y > thisPlanet.transform.position.y) {
+		if (pos.y > thisPlanet.transform.position.y) {
 			angle -= 90;
 		} else {
-			angle = angle - 90;
+			angle = -angle - 90;
 		}
 		return new Vector3 (0, 0, angle);
 	}

@@ -1,48 +1,49 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
-public class MovingTrap : MonoBehaviour {
-
-	public Vector3[] localWaypoints;
-	public Planet myPlanet;
-	Vector3[] globalWaypoints;
+public class CannibalAlien : MonoBehaviour {
 
 	public float speed;
 	public bool cyclic;
-	public bool flipY;
-	public bool left;
-	public bool horizontal;
-	public bool fly;
 	public float waitTime;
 	[Range(0,2)]
 	public float easeAmount;
+	public float shootTime;
+	public GameObject projectile;
+	public Vector3[] localWaypoints;
+	public Vector3[] swipeWaypoints;
+	public Vector3[] strafeWaypoints;
+	public Planet myPlanet;
 
 	int fromWaypointIndex;
 	int faceDir;
 	float percentBetweenWaypoints;
 	float nextMoveTime;
+	float shootTimer;
+	float shootSpeed;
+	float shootSpread;
+	float funcTime;
+	bool inDefault;
+	bool inFunc;
+	bool movingToDefault;
+	Vector3 barrel_0;
+	Vector3 barrel_1;
+	Vector3 barrel_2;
+	Vector3 defaultPos;
+	Vector3[] globalWaypoints;
+	Vector3[] swipWayPoints;
 	AngleController angCont;
 
 	void Start () {
 		angCont = FindObjectOfType<AngleController> ();
-		if (left) {
-			faceDir = -1;
-		} else {
-			faceDir = 1;
-		}
-		if (horizontal) {
-			transform.localEulerAngles = angCont.GetAngle (transform.position, myPlanet);
-		} else {
-			Vector3 newRot = new Vector3(0, 0, angCont.GetAngle (transform.position, myPlanet).z - 90);
-			transform.localEulerAngles = newRot;
-		}
-		if (flipY) {
-			transform.localScale = new Vector3 (transform.localScale.x * faceDir, transform.localScale.y * -1, transform.localScale.z);
-		} else {
-			transform.localScale = new Vector3 (transform.localScale.x * faceDir, transform.localScale.y, transform.localScale.z);
-		}
-
+		transform.localEulerAngles = angCont.GetAngle (transform.position, myPlanet);
+		barrel_0 = transform.Find ("Barrel_0").transform.position;
+		barrel_1 = transform.Find ("Barrel_1").transform.position;
+		barrel_2 = transform.Find ("Barrel_2").transform.position;
+		defaultPos = transform.position;
+		inDefault = true;
+		inFunc = false;
 		globalWaypoints = new Vector3[localWaypoints.Length];
 		for (int i = 0; i < localWaypoints.Length; i++) {
 			globalWaypoints [i] = localWaypoints [i] + transform.position;
@@ -50,19 +51,68 @@ public class MovingTrap : MonoBehaviour {
 	}
 		
 	void Update () {
-		Vector3 velocity = CalculateTrapMovement();
-		if (horizontal) {
-			transform.localEulerAngles = angCont.GetAngle (transform.position, myPlanet);
-		} else {
-			Vector3 newRot = new Vector3(0, 0, angCont.GetAngle (transform.position, myPlanet).z - 90);
-			transform.localEulerAngles = newRot;
+		if (!inFunc && !movingToDefault) {
+			StartCoroutine (MoveToDefault ());
+			if (inDefault) {
+				StartCoroutine (StationaryShoot ());
+			}
 		}
-		if ((velocity.x > 0 && faceDir == -1) || (velocity.x < 0 && faceDir == 1) && !fly) {
-			faceDir = -faceDir;
-			transform.localScale = new Vector3 (transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
-		} 
-		transform.Translate (velocity, Space.World);
 	}
+
+	IEnumerator MoveToDefault(){
+		movingToDefault = true;
+		globalWaypoints = new Vector3[2];
+		globalWaypoints [0] = transform.position;
+		globalWaypoints [1] = defaultPos;
+		Vector3 velocity = CalculateTrapMovement();
+		transform.localEulerAngles = angCont.GetAngle (transform.position, myPlanet);
+		transform.Translate (velocity, Space.World);
+		if (transform.position == globalWaypoints [1]) {
+			movingToDefault = false;
+			inDefault = true;
+			yield return null;
+		}
+	}
+
+	IEnumerator StationaryShoot(){
+		inFunc = true;
+		print ("INFUNC");
+		float spacing = Mathf.Sin(Time.time * (shootSpeed / shootSpread)) * shootSpread;
+		Quaternion rotation;
+		funcTime = 60 * 5;
+		while(funcTime > 0) {
+			funcTime -= Time.deltaTime;
+			rotation = Quaternion.Euler (0, 0, Mathf.PingPong (Time.time * 10, 180));
+			if (shootTimer > 0) {
+				shootTimer -= Time.deltaTime;
+			} else {
+				Instantiate (projectile, barrel_0, rotation);
+				Instantiate (projectile, barrel_1, rotation);
+				Instantiate (projectile, barrel_2, rotation);
+			}
+		}
+		inFunc = false;
+		yield return null;
+	}
+
+	IEnumerator StrafeShoot(){
+		inFunc = true;
+		inFunc = false;
+		yield return null;
+	}
+
+	IEnumerator Swipe(){
+		inFunc = true;
+		inFunc = false;
+		yield return null;
+	}
+
+	IEnumerable GrabCube(){
+		inFunc = true;
+		inFunc = false;
+		yield return null;
+	}
+		
 
 	float Ease(float x){
 		float a = easeAmount + 1;

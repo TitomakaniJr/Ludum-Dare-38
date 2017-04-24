@@ -4,17 +4,27 @@ using System.Collections;
 public class LaserTrap : MonoBehaviour {
 
 	public int faceDir;
-	public bool horizontal;
 	public float onTime;
 	public float offTime;
 	public float warmupTime;
+	public bool flipY;
+	public bool left;
+	public bool horizontal;
+	public GameObject projectilePrefab;
+	public LayerMask playerMask;
+	public Planet myPlanet;
 
+	float spawnTimer;
+	float offsetTimer;
 	float raySpacing = .17f;
 	float onTimer;
 	float offTimer;
 	float warmupTimer;
+	bool spawn;
+	bool off;
+	bool on;
+	bool warmup;
 
-	public LayerMask playerMask;
 
 	PlayerManager playerManager;
 	LineRenderer laserRender;
@@ -24,12 +34,14 @@ public class LaserTrap : MonoBehaviour {
 	Vector2 rayOrigin0;
 	Vector2 rayOrigin1;
 	Material[] mats;
-	bool off;
-	bool on;
-	bool warmup;
+
+	Animator anim;
+	AngleController angCont;
 
 	// Use this for initialization
 	void Start () {
+		anim = GetComponent<Animator> ();
+		angCont = FindObjectOfType<AngleController> ();
 		col = GetComponent<BoxCollider2D> ();
 		laserRender = GetComponent<LineRenderer> ();
 		laserRender.enabled = false;
@@ -43,11 +55,13 @@ public class LaserTrap : MonoBehaviour {
 		off = true;
 
 		if (horizontal) {
-			transform.localEulerAngles = new Vector3 (transform.rotation.x, transform.rotation.y, transform.rotation.z - 90);
+			transform.localEulerAngles = angCont.GetAngle (transform.position, myPlanet);
 			rayOrigin = new Vector2 (transform.position.x + (col.bounds.extents.y + .01f) * faceDir, transform.position.y);
 			rayOrigin0 = new Vector2 (transform.position.x + (col.bounds.extents.y + .01f) * faceDir, transform.position.y + raySpacing);
 			rayOrigin1 = new Vector2 (transform.position.x + (col.bounds.extents.y + .01f) * faceDir, transform.position.y - raySpacing);
 		} else {
+			Vector3 newRot = new Vector3(0, 0, angCont.GetAngle (transform.position, myPlanet).z - 90);
+			transform.localEulerAngles = newRot;
 			rayOrigin = new Vector2 (transform.position.x , transform.position.y + (col.bounds.extents.y + .01f) * faceDir);
 			rayOrigin0 = new Vector2 (transform.position.x + raySpacing, transform.position.y + (col.bounds.extents.y + .01f) * faceDir);
 			rayOrigin1 = new Vector2 (transform.position.x - raySpacing, transform.position.y + (col.bounds.extents.y + .01f) * faceDir);
@@ -57,17 +71,7 @@ public class LaserTrap : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (horizontal) {
-			transform.localEulerAngles = new Vector3 (transform.rotation.x, transform.rotation.y, transform.rotation.z - 90);
-			rayOrigin = new Vector2 (transform.position.x + (col.bounds.extents.y + .01f) * faceDir, transform.position.y);
-			rayOrigin0 = new Vector2 (transform.position.x + (col.bounds.extents.y + .01f) * faceDir, transform.position.y + raySpacing);
-			rayOrigin1 = new Vector2 (transform.position.x + (col.bounds.extents.y + .01f) * faceDir, transform.position.y - raySpacing);
-		} else {
-			rayOrigin = new Vector2 (transform.position.x , transform.position.y + (col.bounds.extents.y + .01f) * faceDir);
-			rayOrigin0 = new Vector2 (transform.position.x + raySpacing, transform.position.y + (col.bounds.extents.y + .01f) * faceDir);
-			rayOrigin1 = new Vector2 (transform.position.x - raySpacing, transform.position.y + (col.bounds.extents.y + .01f) * faceDir);
-		}
-		transform.localScale = new Vector3 (transform.localScale.x, transform.localScale.y * faceDir, transform.localScale.z);
+		
 		//Check if laser is on
 		if (onTimer > 0) {
 			onTimer -= Time.deltaTime;

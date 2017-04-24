@@ -30,7 +30,7 @@ public class ProjectileController : MonoBehaviour {
 				transform.eulerAngles = newRotation;
 				transform.Translate(new Vector3 (projectileSpeed * faceDir, 0, 0));
 			} else {
-				transform.Translate(new Vector3 (projectileSpeed * faceDir, 0, 0));
+				transform.Translate(new Vector3 (projectileSpeed * -faceDir, 0, 0));
 			}
 		}
 	}

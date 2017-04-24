@@ -4,6 +4,7 @@ using System.Collections;
 public class Checkpoint : MonoBehaviour {
 
 	public bool active;
+
 	public Sprite shipActive;
 	public Sprite shipInactive;
 	public Planet myPlanet;
