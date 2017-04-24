@@ -177,19 +177,6 @@ public class Controller2D : RaycastController {
 			RaycastHit2D hit = Physics2D.Raycast (rayOrigin, tempDir , rayLength, collisionMask);
 			Debug.DrawRay (rayOrigin, tempDir * rayLength, Color.red);
 			if (hit) {
-				if (hit.collider.tag == "Through") {
-					if (directionY == 1 || hit.distance == 0) {
-						continue;
-					}
-					if (collisions.fallingThroughPlatform) {
-						continue;
-					}
-					if (playerInput.y == -1) {
-						collisions.fallingThroughPlatform = true;
-						Invoke ("ResetFallingThroughPlatform", .5f);
-						continue;
-					}
-				} 
 
 				if(!collisions.wallSlide){
 					velocity.y = (hit.distance - skinWidth) * directionY;

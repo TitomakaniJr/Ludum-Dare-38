@@ -362,6 +362,7 @@ public class Player : MonoBehaviour {
 				float distance = Vector2.Distance (new Vector2 (transform.position.x, transform.position.y), 
                 		new Vector2 (planets [i].transform.position.x, planets [i].transform.position.y));
 				tempForce = planets [i].gravityConst * (planets [i].mass / Mathf.Pow (distance, 2));
+				print (tempForce);
 				if (i == 0) {
 					tempPlanet = planets [i];
 				}

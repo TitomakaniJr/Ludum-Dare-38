@@ -43,7 +43,7 @@ public class ProjectileController : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D(Collider2D col){
- 		if (col.tag == "Obstacle") {
+		if (col.tag == "Obstacle" || col.tag == "Planet") {
 			DestroyProjectile ();
 		}
 		else if(col.name == "Player") {

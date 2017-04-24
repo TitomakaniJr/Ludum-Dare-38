@@ -11,6 +11,7 @@ public class PlayerManager : MonoBehaviour {
 
 	GameObject player;
 	CheckpointController checkpointController;
+	CannibalAlien boss;
 
 	// Use this for initialization
 	void Start () {
@@ -18,6 +19,7 @@ public class PlayerManager : MonoBehaviour {
 		checkpointController = FindObjectOfType<CheckpointController> ();
 		player = GameObject.Find("Player");
 		contextualText = player.GetComponentInChildren<MeshRenderer> ();
+		boss = FindObjectOfType<CannibalAlien> ();
 	}
 
 	void Update(){
@@ -39,6 +41,7 @@ public class PlayerManager : MonoBehaviour {
 	void Respawn(){
 		Instantiate (playerPrefab, checkpointController.currentCheckpoint.transform.position + new Vector3(0,-1f), Quaternion.identity);
 		respawned = true;
+		boss.Killed ();
 	}
 		
 
