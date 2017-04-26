@@ -7,9 +7,6 @@ public class CannibalAlien : MonoBehaviour {
 	public float moveSpeed;
 	public float strafeSpeed;
 	public float swipeSpeed;
-	public bool cyclic;
-	public float waitTime;
-	[Range(0,2)]
 	public float easeAmount;
 	public float shootTime;
 	public GameObject projectile;
@@ -19,12 +16,15 @@ public class CannibalAlien : MonoBehaviour {
 	public Vector3[] strafeWaypoints;
 	public Planet myPlanet;
 	public CapsuleCollider2D[] myCols;
+	public GameObject femalePlatform;
+	public GameObject female;
 
 	int fromWaypointIndex;
 	int faceDir;
 	int bossFunc;
 	int hitCounter;
 	int moveCounter;
+	int gunCounter;
 	float percentBetweenWaypoints;
 	float nextMoveTime;
 	float shootTimer;
@@ -33,7 +33,6 @@ public class CannibalAlien : MonoBehaviour {
 	float funcTime;
 	bool inFunc;
 	bool movingToStart;
-	bool funcMove;
 	bool setup;
 	bool dead;
 	bool inFight;
@@ -53,10 +52,10 @@ public class CannibalAlien : MonoBehaviour {
 		defaultPos = transform.position;
 		inFunc = false;
 		movingToStart = false;
-		funcMove = false;
 		setup = true;
 		dead = false;
-		roof.enabled = false;;
+		roof.enabled = false;
+		gunCounter = 0;
 
 		globalWaypoints = new Vector3[localWaypoints.Length];
 		for (int i = 0; i < localWaypoints.Length; i++) {
@@ -83,19 +82,24 @@ public class CannibalAlien : MonoBehaviour {
 			}
 			if (transform.position == globalWaypoints [1] || inFunc) {
 				if (!inFunc) {
-					bossFunc = Random.Range (0, 3);
+					if (gunCounter == 3) {
+						bossFunc = 2;
+					} else {
+						bossFunc = Random.Range (0, 3);
+					}
 					if (bossFunc == 0 || bossFunc == 1) {
+						gunCounter++;
 						if (!anim.GetBool ("Gun")) {
 							anim.ResetTrigger ("Plunge");
 							anim.SetTrigger ("Gun");
 						}
 					} else {
+						gunCounter = 0;
 						if (!anim.GetBool ("Plunge")) {
 							anim.ResetTrigger ("Gun");
 							anim.SetTrigger ("Plunge");
 						}
 					}
-					print (bossFunc);
 					myCols [0].enabled = true;
 					myCols [1].enabled = true;
 				}
@@ -154,7 +158,6 @@ public class CannibalAlien : MonoBehaviour {
 					}
 					if (transform.position == globalWaypoints [1] && movingToStart) {
 						movingToStart = false;
-						funcMove = true;
 					}
 					if (bossFunc == 1 && !movingToStart) { //STRAFE SHOOT
 						if (setup) {
@@ -247,18 +250,22 @@ public class CannibalAlien : MonoBehaviour {
 		anim.SetTrigger ("Hit");
 		if (hitCounter == 3) {
 			dead = true;
+			femalePlatform.SetActive (true);
+			female.SetActive (true);
 		}
 	}
 
 	public void Killed(){
-		anim.SetTrigger ("Kill");
-		hitCounter = 0;
-		moveCounter = 0;
-		setup = true;
-		inFunc = false;
-		shootTime = .5f;
-		inFight = false;
-		transform.position = defaultPos;
+		if (!dead) {
+			anim.SetTrigger ("Kill");
+			hitCounter = 0;
+			moveCounter = 0;
+			setup = true;
+			inFunc = false;
+			shootTime = .5f;
+			inFight = false;
+			transform.position = defaultPos;
+		}
 	}
 
 	public void StartFight(){
@@ -291,12 +298,10 @@ public class CannibalAlien : MonoBehaviour {
 		if (percentBetweenWaypoints >= 1) {
 			percentBetweenWaypoints = 0;
 			fromWaypointIndex++;
-			if (!cyclic) {
-				if (fromWaypointIndex >= globalWaypoints.Length - 1) {
-					fromWaypointIndex = 0;
-				}
+			if (fromWaypointIndex >= globalWaypoints.Length - 1) {
+				fromWaypointIndex = 0;
 			}
-			nextMoveTime = Time.time + waitTime;
+			nextMoveTime = Time.time;
 		}
 		//return the velocity to get to the new position
 		return newPos - transform.position;

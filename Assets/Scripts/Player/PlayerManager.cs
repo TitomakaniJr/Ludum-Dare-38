@@ -7,6 +7,7 @@ public class PlayerManager : MonoBehaviour {
 	[HideInInspector]
 	public MeshRenderer contextualText;
 
+	int frameCount;
 	bool respawned;
 
 	GameObject player;
@@ -20,6 +21,7 @@ public class PlayerManager : MonoBehaviour {
 		player = GameObject.Find("Player");
 		contextualText = player.GetComponentInChildren<MeshRenderer> ();
 		boss = FindObjectOfType<CannibalAlien> ();
+		frameCount = 0;
 	}
 
 	void Update(){
@@ -27,9 +29,13 @@ public class PlayerManager : MonoBehaviour {
 			player = GameObject.Find("Player");
 		}
 		if (respawned == true) {
-			player.transform.localEulerAngles = checkpointController.currentCheckpoint.transform.localEulerAngles;
-			player.GetComponent<Player> ().standPlanet = checkpointController.currentCheckpoint.GetComponent<Checkpoint> ().myPlanet;
-			respawned = false;
+			if (frameCount == 0) {
+				frameCount++;
+			} else {
+				player.transform.localEulerAngles = checkpointController.currentCheckpoint.transform.localEulerAngles;
+				player.GetComponent<Player> ().standPlanet = checkpointController.currentCheckpoint.GetComponent<Checkpoint> ().myPlanet;
+				respawned = false;
+			}
 		}
 	}
 	public void Die(){
@@ -39,6 +45,7 @@ public class PlayerManager : MonoBehaviour {
 
 	//create new player object at last checkpoint
 	void Respawn(){
+		frameCount = 0;
 		Instantiate (playerPrefab, checkpointController.currentCheckpoint.transform.position + new Vector3(0,-1f), Quaternion.identity);
 		respawned = true;
 		boss.Killed ();
