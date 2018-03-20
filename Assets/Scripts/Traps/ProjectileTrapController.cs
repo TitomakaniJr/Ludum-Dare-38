@@ -44,7 +44,7 @@ public class ProjectileTrapController : MonoBehaviour {
 		} else {
 			transform.localScale = new Vector3 (transform.localScale.x * faceDir, transform.localScale.y, transform.localScale.z);
 		}
-		projectSpawn = transform.FindChild ("ProjectSpawn").position;
+		projectSpawn = transform.Find ("ProjectSpawn").position;
 	}
 
 
